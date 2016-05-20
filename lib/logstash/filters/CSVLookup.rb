@@ -1,7 +1,7 @@
 # encoding: utf-8
 require "logstash/filters/base"
 require "logstash/namespace"
-require "fastercsv"
+require "csv"
 require "ipaddress"
 
 # The cvslookup filter allows you to add fields to an event
@@ -35,12 +35,6 @@ class LogStash::Filters::CSVLookup < LogStash::Filters::Base
   
   public
   def register
-  	 loadFile()
-    #puts @lookup.inspect
-  end # def register
-
-  public
-  def loadFile
     @lookup = Hash.new
     @checkNetwork = Hash.new
 
@@ -50,8 +44,9 @@ class LogStash::Filters::CSVLookup < LogStash::Filters::Base
         @checkNetwork[row[@key_col - 1]] = IPAddress(row[@key_col - 1])
 	  end
     end
-  end
-  
+    #puts @lookup.inspect
+  end # def register
+
   public
   def filter(event)
     return unless filter?(event)
@@ -61,10 +56,11 @@ class LogStash::Filters::CSVLookup < LogStash::Filters::Base
 		@checkNetwork.each {|key, value|
 		  if value.include?(IPAddress(event[src_field].to_s))
 		  looked_up_val = @lookup[key]
+			break
 		  end
 		}
 		  if looked_up_val.nil?
-			  if !@default.nil?
+			  if !@default.nil? 
 				event[dest_field] = @default
 			  end
 		  else
@@ -74,11 +70,11 @@ class LogStash::Filters::CSVLookup < LogStash::Filters::Base
 	else
 		@map_field.each do |src_field,dest_field|
 		  looked_up_val = @lookup[event[src_field].to_s]
-		  if looked_up_val.nil?
-			  if !@default.nil?
-				event[dest_field] = @default
-			  end
-		  else
+		  if !looked_up_val.nil?
+			 # if !@default.nil?
+			#	event[dest_field] = @default
+			#  end
+		  #else
 			  event[dest_field] = looked_up_val
 		  end
 		end
