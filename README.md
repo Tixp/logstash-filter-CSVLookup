@@ -20,36 +20,35 @@ CSVLookup {
 ```
 
 If network is true, the source field must be a IP address and the column key must be network IP address (like 192.168.0.0/16).
+Then, the source_field will match only if the IP address belongs a network.
+Else if network is false, it will be a basic matching.
 
-Si le paramètre network vaut true, le champ source doit être une adresse IP et la colonne clef doit contenir des adresses IP réseau, le plugin va vérifier si l’adresse IP appartient à ce réseau. Si l’on veut faire une simple comparaison entre la source et la colonne clef, « network » doit valoir « false ».
-
-
-Le fait de pouvoir préciser le numéro de colonne permet de pouvoir créer plusieurs champs si la source match. Exemple :
+It's useful to precise the number of the column, it allow to create multiple field from one CSV file. Example :
 
 ```
  if [src] {
     CSVLookup {
-      file => "/opt/logstash/lookups/nz.csv"
+      file => "/path/to/file.csv"
+      key_col => 1
+      value_col => 2
+      default => "unknown"
+      map_field => { "example" => "field_1" }
+      network => true
+    }
+    CSVLookup {
+      file => "/path/to/file.csv"
       key_col => 1
       value_col => 3
       default => "unknown"
-      map_field => { "src" => "src_nz" }
+      map_field => { "example" => "field_2" }
       network => true
     }
     CSVLookup {
-      file => "/opt/logstash/lookups/nz.csv"
+      file => "/path/to/file.csv"
       key_col => 1
-      value_col => 7
+      value_col => 4
       default => "unknown"
-      map_field => { "src" => "src_site" }
-      network => true
-    }
-    CSVLookup {
-      file => "/opt/logstash/lookups/nz.csv"
-      key_col => 1
-      value_col => 8
-      default => "unknown"
-      map_field => { "src" => "src_building" }
+      map_field => { "example" => "field_3" }
       network => true
     }
   }
