@@ -1,4 +1,65 @@
-# Logstash Plugin
+# CSVLookup
+
+## Installation
+
+```sh
+/LOGSTASH_HOME/bin/logstash-plugin install logstash-filter-CSVLookup/logstash-filter-CSVLookup-<version>.gem
+```
+
+## How it work
+
+```
+CSVLookup {
+  file => "/path/to/file.csv"
+  key_col => 1		: Number of the csv column witch is use as key
+  value_col => 2		: Number of the csv column witch is use as value
+  default => "unknown"	: Value of dest_field if source_field don't match a key
+  map_field => { "<source_field>" => "<dest_field>" }
+  network => false		
+}
+```
+
+If network is true, the source field must be a IP address and the column key must be network IP address (like 192.168.0.0/16).
+
+Si le paramètre network vaut true, le champ source doit être une adresse IP et la colonne clef doit contenir des adresses IP réseau, le plugin va vérifier si l’adresse IP appartient à ce réseau. Si l’on veut faire une simple comparaison entre la source et la colonne clef, « network » doit valoir « false ».
+
+
+Le fait de pouvoir préciser le numéro de colonne permet de pouvoir créer plusieurs champs si la source match. Exemple :
+
+```
+ if [src] {
+    CSVLookup {
+      file => "/opt/logstash/lookups/nz.csv"
+      key_col => 1
+      value_col => 3
+      default => "unknown"
+      map_field => { "src" => "src_nz" }
+      network => true
+    }
+    CSVLookup {
+      file => "/opt/logstash/lookups/nz.csv"
+      key_col => 1
+      value_col => 7
+      default => "unknown"
+      map_field => { "src" => "src_site" }
+      network => true
+    }
+    CSVLookup {
+      file => "/opt/logstash/lookups/nz.csv"
+      key_col => 1
+      value_col => 8
+      default => "unknown"
+      map_field => { "src" => "src_building" }
+      network => true
+    }
+  }
+```
+
+## Thanks
+
+This plugin was build based on the code given here : http://stackoverflow.com/questions/26059704/logstash-enrich-event-from-log-file-with-data-from-static-csv-file
+
+## Logstash Plugin
 
 [![Travis Build Status](https://travis-ci.org/logstash-plugins/logstash-filter-example.svg)](https://travis-ci.org/logstash-plugins/logstash-filter-example)
 
