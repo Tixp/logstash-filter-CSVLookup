@@ -26,7 +26,6 @@ Else if network is false, it will be a basic matching.
 It's useful to precise the number of the column, it allow to create multiple field from one CSV file. Example :
 
 ```
- if [src] {
     CSVLookup {
       file => "/path/to/file.csv"
       key_col => 1
@@ -51,7 +50,6 @@ It's useful to precise the number of the column, it allow to create multiple fie
       map_field => { "example" => "field_3" }
       network => true
     }
-  }
 ```
 
 ## Thanks
